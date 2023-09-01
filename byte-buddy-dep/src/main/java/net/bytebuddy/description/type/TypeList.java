@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -959,7 +960,14 @@ public interface TypeList extends FilterableList<TypeDescription, TypeList> {
              * {@inheritDoc}
              */
             public TypeDescription.Generic get(int index) {
-                return new OfMethodExceptionTypes.TypeProjection(method, index, method.getExceptionTypes());
+                Class<?>[] exceptionTypes = method.getExceptionTypes();
+                Arrays.sort(exceptionTypes, new Comparator<Class<?>>() {
+                    @Override
+                    public int compare(Class<?> aClass, Class<?> t1) {
+                        return aClass.getCanonicalName().compareTo(t1.getCanonicalName());
+                    }
+                });
+                return new OfMethodExceptionTypes.TypeProjection(method, index, exceptionTypes);
             }
 
             /**
